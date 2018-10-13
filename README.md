@@ -1,4 +1,4 @@
-# mirna-explorer
+# mirna_explorer
 A set of curated graphical representations to explore the simultaneous effect of hundreds of microRNAs onto thousands of genes.
 
 The code contained in this repository refers to data visualization only. The methods for computing the displayed quantities are publicly available in this other repository [mirna_target_prediction](https://github.com/LucaMarconato/mirna_target_prediction).
