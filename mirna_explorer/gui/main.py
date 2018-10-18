@@ -1,20 +1,20 @@
-import sys
-from PySide2.QtWidgets import (QLabel, QWidget, QMainWindow, QApplication, QAction, 
-                               QFileDialog, QGridLayout, QVBoxLayout, QPushButton)
-from graph import Graph
+import PySide2.QtWidgets as QtWidgets
+import PySide2.QtGui as QtGui
+from gui.graph import Graph
 
 
-class MirnaExplorer(QMainWindow):
+class MirnaExplorer(QtWidgets.QMainWindow):
     
     def __init__(self):
-        QMainWindow.__init__(self)
+        QtWidgets.QMainWindow.__init__(self)
         self.setWindowTitle(self.tr('Mirna Explorer'))
+        self.resize(1024, 768)
         
         self.test_widget = Graph(self)
         self.setCentralWidget(self.test_widget)
         
         self.createMenus()       
-        
+    
     def createMenus(self):
         fileMenu = self.menuBar().addMenu("&File")
         toolMenu = self.menuBar().addMenu("&Tools")
@@ -33,16 +33,16 @@ class MirnaExplorer(QMainWindow):
         self.removeAction.setEnabled(False)
         
     def createAction(self, text, menu, slot):
-        action = QAction(text, self)
+        action = QtWidgets.QAction(text, self)
         menu.addAction(action)
         action.triggered.connect(slot)
         return action
         
     def openFile(self):
-        filename, _ = QFileDialog.getOpenFileName(self)
-
+        filename, _ = QtWidgets.QFileDialog.getOpenFileName(self)
+        
     def saveFile(self):
-        filename, _ = QFileDialog.getSaveFileName(self)
+        filename, _ = QtWidgets.QFileDialog.getSaveFileName(self)
 
     def updateActions(self, selection):
         indexes = selection.indexes()
@@ -56,12 +56,3 @@ class MirnaExplorer(QMainWindow):
             
     def hello(self):
         print('hello')
-
-
-def run_app():
-    app = QApplication(sys.argv)
-    
-    window = MirnaExplorer()
-    window.show()
-    
-    sys.exit(app.exec_())
