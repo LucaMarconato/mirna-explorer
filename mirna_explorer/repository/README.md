@@ -6,7 +6,7 @@ So, if you modify the database structure and regenerate the create script, you m
 
 The script `./create_database.py` executes `.model/design.sql` creating a database under `./database/db.sqlite`. Then, the script populates the database with the data. 
 The script requires the data to be available, so before creating the database it checks if the data files exists.
-It is recommended to clone the repository (mirna\_target\_prediction)[https://github.com/LucaMarconato/mirna_target_prediction] in the same folder in which this repository has been cloned, so that `mirna_explorer` will use the raw and processed data used in `mirna_target_prediction`.
+It is recommended to clone the repository [mirna_target_prediction](https://github.com/LucaMarconato/mirna_target_prediction) in the same folder in which this repository has been cloned, so that `mirna_explorer` will use the raw and processed data used in `mirna_target_prediction`.
 
 
 
