@@ -8,14 +8,14 @@ REQUIRED_FILES = ['raw/UTR_Sequences.txt',
                   'processed/scored_interactions_processed.tsv']
 DB_PATH = './database/mirna_explorer.sqlite'
 
-for filename in required_files:
-    path = data_folder + filename
+for filename in REQUIRED_FILES:
+    path = DATA_FOLDER + filename
     if not os.path.isfile(path):
         print(f'error: file not found: "{path}", aborting')
         exit(1)
 
-if os.path.isfile(db_path):
-    print(f'the database is already present at {db_path}, aborting')
+if os.path.isfile(DB_PATH):
+    print(f'the database is already present at {DB_PATH}, aborting')
     exit(1)
 
 db_connection = sqlite3.connect(DB_PATH)
