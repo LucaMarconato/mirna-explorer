@@ -1,36 +1,32 @@
-#!/usr/bin/env python3
-
 import os
 import sqlite3
 
-data_folder = "../../../mirna_target_prediction/data/"
-
-required_files = ["raw/UTR_Sequences.txt",
-				  "processed/mirna_id_dictionary.tsv",
-				  "processed/gene_id_dictionary.tsv",
-				  "processed/scored_interactions_processed.tsv"]
+DATA_FOLDER = '../../../mirna_target_prediction/data/'
+REQUIRED_FILES = ['raw/UTR_Sequences.txt',
+                  'processed/mirna_id_dictionary.tsv',
+                  'processed/gene_id_dictionary.tsv',
+                  'processed/scored_interactions_processed.tsv']
+DB_PATH = './database/mirna_explorer.sqlite'
 
 for filename in required_files:
-	path = data_folder + filename
-	if not os.path.isfile(path):
-		print(f'error: file not found: \'{path}\', aborting')
-		exit(1)
-
-db_path = 'database/db.sqlite'
+    path = data_folder + filename
+    if not os.path.isfile(path):
+        print(f'error: file not found: "{path}", aborting')
+        exit(1)
 
 if os.path.isfile(db_path):
-	print(f'the database is already present at {db_path}, aborting')
-	exit(1)
-		
-db_connection = sqlite3.connect('database/db.sqlite')
+    print(f'the database is already present at {db_path}, aborting')
+    exit(1)
+
+db_connection = sqlite3.connect(DB_PATH)
 db = db_connection.cursor()
 
-with open('./model/design.sql', 'r') as infile:
-	script = infile.read()
-	print('running sqlite3 script, ', end = '')
-	db.executescript(script)
-	print('created database in ./database/db.sqlite')
-	db_connection.commit()
+with open('./model/design.sql') as infile:
+    script = infile.read()
+    print('running sqlite3 script, ', end='')
+    db.executescript(script)
+    print(f'created database in {DB_PATH}')
+    db_connection.commit()
 
 db_connection.close()
 
