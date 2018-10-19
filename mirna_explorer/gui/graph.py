@@ -2,8 +2,8 @@ import PySide2.QtWidgets as QtWidgets
 
 
 class Graph(QtWidgets.QWidget):
-    
-    def __init__(self, parent):        
+
+    def __init__(self, parent):
         super().__init__(parent)
         self.layout = QtWidgets.QVBoxLayout(self)
 
