@@ -11,7 +11,7 @@ jobs:
       - run: sudo chown -R circleci:circleci /usr/local/bin
       - run: sudo chown -R circleci:circleci /usr/local/lib/python3.6/site-packages
       - run: flake8 . --count --show-source --statistics
-      - run: python tests/run_all_tests.py"
+      - run: python tests/run_all_tests.py
       - run: mkdir test_reports
       - run: coverage run -p tests/run_all_tests.py && coverage combine && coverage html -d test_results/coverage
       - store_test_results:
