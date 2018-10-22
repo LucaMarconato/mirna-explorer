@@ -2,7 +2,7 @@ import unittest
 
 
 class DummyTestCase(unittest.TestCase):
-
+    
     def setUp(self):
         self.AN_ITEM = "item"
 
