@@ -1,45 +1,77 @@
 import PySide2.QtWidgets as QtWidgets
 import PySide2.QtGui as QtGui
 
+FNC = 'function'
+KEY = 'shortcut'
+SEP = 'separator'
+
 
 class Menubar:
 
     def __init__(self, app):
         self._app = app
         self._menubar = app.menuBar()
-        self.add_file_menu()
-
-    def add_file_menu(self):
-        action = self._create_action
         keys = QtGui.QKeySequence
 
-        new_action = action('&New', self._new, keys.New)
-        open_action = action('&Open...', self._open, keys.Open)
-        save_action = action('&Save', self._save, keys.Save)
-        save_as_action = action('Save As...', self._save_as, keys.SaveAs)
-        import_action = action('Import...', self._import)
-        export_action = action('Export...', self._export)
-        exit_action = action('&Exit', self._app.close, keys.Quit)
-        
-        file_menu = self._menubar.addMenu('&File')
-        file_menu.addAction(new_action)
-        file_menu.addAction(open_action)
-        file_menu.addAction(save_action)
-        file_menu.addAction(save_as_action)
-        file_menu.addSeparator()
-        file_menu.addAction(import_action)
-        file_menu.addAction(export_action)
-        file_menu.addSeparator()
-        file_menu.addAction(exit_action)
+        menu = {
+            '&File': {
+                '&New': {FNC: self._new, KEY: keys.New},
+                '&Open': {FNC: self._open, KEY: keys.Open},
+                '&Save': {FNC: self._save, KEY: keys.Save},
+                'Save As...': {FNC: self._save_as, KEY: keys.SaveAs},
+                f'{SEP}1': {},
+                'Import...': {FNC: self._import},
+                'Export...': {FNC: self._export},
+                f'{SEP}2': {},
+                '&Exit': {FNC: self._app.close, KEY: keys.Quit}
+            },
+            '&Edit': {
+                'Undo': {FNC: self._undo, KEY: keys.Undo},
+                'Redo': {FNC: self._redo, KEY: keys.Redo},
+                'Undo History': {FNC: self._undo_history},
+                f'{SEP}3': {},
+                'Cut': {FNC: self._cut, KEY: keys.Cut},
+                'Copy': {FNC: self._copy, KEY: keys.Copy},
+                'Paste': {FNC: self._paste, KEY: keys.Paste},
+                f'sep4': {},
+                'Preferences': {FNC: self._preferences},
+                'Keyboard Shortcuts': {FNC: self._kb_shortcuts}
+            },
+            '&View': {
+                'Zoom': {FNC: self._zoom},
+                f'{SEP}5': {},
+                'Fullscreen': {FNC: self._fullscreen, KEY: keys.FullScreen},
+                f'{SEP}6': {},
+                'Show Grid': {FNC: self._show_grid},
+                'Show Sample Points': {FNC: self._show_sample_pts},
+                f'{SEP}7': {},
+                'Show Menubar': {FNC: self._show_menubar},
+                'Show Statusbar': {FNC: self._show_statusbar}
+            },
+            '&Help': {
+                'Help': {FNC: self._help, KEY: keys.HelpContents},
+                'Contact Help': {FNC: self._contact_help},
+                'About Mirna Explorer': {FNC: self._about}
+            }
+        }
 
-    def add_edit_menu(self):
-        pass
+        self._create_menu(menu)
 
-    def add_view_menu(self):
-        pass
+    def _create_menu(self, menu_layout):
+        for header, entries in menu_layout.items():
+            menu = self._menubar.addMenu(header)
+            for submenu, opts in entries.items():
+                if 'sep' in submenu:
+                    menu.addSeparator()
+                else:
+                    menu.addAction(self._create_action(submenu, **opts))
 
-    def add_help_menu(self):
-        pass
+    def _create_action(self, text, function, shortcut=None):
+        action = QtWidgets.QAction(text, self._app)
+        if shortcut is not None:
+            action.setShortcut(shortcut)
+        action.triggered.connect(lambda: function())
+        return action
 
     def _new(self):
         print('new')
@@ -59,9 +91,53 @@ class Menubar:
     def _export(self):
         print('export')
 
-    def _create_action(self, text, fnc, shortcut=None):
-        action = QtWidgets.QAction(text, self._app)
-        if shortcut is not None:
-            action.setShortcut(shortcut)
-        action.triggered.connect(lambda: fnc())
-        return action
+    def _undo(self):
+        print('undo')
+
+    def _redo(self):
+        print('redo')
+
+    def _undo_history(self):
+        print('undo_history')
+
+    def _cut(self):
+        print('cut')
+
+    def _copy(self):
+        print('copy')
+
+    def _paste(self):
+        print('paste')
+
+    def _preferences(self):
+        print('preferences')
+
+    def _kb_shortcuts(self):
+        print('keyboard shortcuts')
+
+    def _zoom(self):
+        print('zoom')
+
+    def _fullscreen(self):
+        print('fullscreen')
+
+    def _show_grid(self):
+        print('show grid')
+
+    def _show_sample_pts(self):
+        print('show sample points')
+
+    def _show_menubar(self):
+        print('show menubar')
+
+    def _show_statusbar(self):
+        print('show statusbar')
+
+    def _help(self):
+        print('help')
+
+    def _contact_help(self):
+        print('contact help')
+
+    def _about(self):
+        print('about')
