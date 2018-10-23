@@ -1,16 +1,16 @@
 import PySide2.QtWidgets as QtWidgets
 import PySide2.QtGui as QtGui
 
-FNC = 'function'
-KEY = 'shortcut'
-
 
 class Menubar:
 
     def __init__(self, app):
         self._app = app
         self._menubar = app.menuBar()
+        
         self.SEPARATOR = 'separator'
+        FNC = 'function'
+        KEY = 'shortcut'
         keys = QtGui.QKeySequence
 
         menu = {
