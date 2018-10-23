@@ -102,9 +102,11 @@ class Menubar:
 
     def _cut(self):
         print('cut')
+        self._app.statusBar().showMessage("Cut")
 
     def _copy(self):
         print('copy')
+        self._app.statusBar().showMessage("Copy")
 
     def _paste(self):
         print('paste')
