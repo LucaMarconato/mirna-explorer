@@ -3,7 +3,6 @@ import PySide2.QtGui as QtGui
 
 FNC = 'function'
 KEY = 'shortcut'
-SEP = 'separator'
 
 
 class Menubar:
@@ -11,6 +10,7 @@ class Menubar:
     def __init__(self, app):
         self._app = app
         self._menubar = app.menuBar()
+        self.SEPARATOR = 'separator'
         keys = QtGui.QKeySequence
 
         menu = {
@@ -19,32 +19,32 @@ class Menubar:
                 '&Open': {FNC: self._open, KEY: keys.Open},
                 '&Save': {FNC: self._save, KEY: keys.Save},
                 'Save As...': {FNC: self._save_as, KEY: keys.SaveAs},
-                f'{SEP}1': {},
+                f'{self.SEPARATOR}1': {},
                 'Import...': {FNC: self._import},
                 'Export...': {FNC: self._export},
-                f'{SEP}2': {},
+                f'{self.SEPARATOR}2': {},
                 '&Exit': {FNC: self._app.close, KEY: keys.Quit}
             },
             '&Edit': {
                 'Undo': {FNC: self._undo, KEY: keys.Undo},
                 'Redo': {FNC: self._redo, KEY: keys.Redo},
                 'Undo History': {FNC: self._undo_history},
-                f'{SEP}3': {},
+                f'{self.SEPARATOR}3': {},
                 'Cut': {FNC: self._cut, KEY: keys.Cut},
                 'Copy': {FNC: self._copy, KEY: keys.Copy},
                 'Paste': {FNC: self._paste, KEY: keys.Paste},
-                f'sep4': {},
+                f'{self.SEPARATOR}4': {},
                 'Preferences': {FNC: self._preferences},
                 'Keyboard Shortcuts': {FNC: self._kb_shortcuts}
             },
             '&View': {
                 'Zoom': {FNC: self._zoom},
-                f'{SEP}5': {},
+                f'{self.SEPARATOR}5': {},
                 'Fullscreen': {FNC: self._fullscreen, KEY: keys.FullScreen},
-                f'{SEP}6': {},
+                f'{self.SEPARATOR}6': {},
                 'Show Grid': {FNC: self._show_grid},
                 'Show Sample Points': {FNC: self._show_sample_pts},
-                f'{SEP}7': {},
+                f'{self.SEPARATOR}7': {},
                 'Show Menubar': {FNC: self._show_menubar},
                 'Show Statusbar': {FNC: self._show_statusbar}
             },
@@ -61,7 +61,7 @@ class Menubar:
         for header, entries in menu_layout.items():
             menu = self._menubar.addMenu(header)
             for submenu, opts in entries.items():
-                if 'sep' in submenu:
+                if self.SEPARATOR in submenu:
                     menu.addSeparator()
                 else:
                     menu.addAction(self._create_action(submenu, **opts))
