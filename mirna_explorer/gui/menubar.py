@@ -7,7 +7,7 @@ class Menubar:
     def __init__(self, app):
         self._app = app
         self._menubar = app.menuBar()
-        
+
         self.SEPARATOR = 'separator'
         FNC = 'function'
         KEY = 'shortcut'
