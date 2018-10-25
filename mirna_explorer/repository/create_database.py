@@ -51,30 +51,26 @@ db.execute(('INSERT INTO seed_match_types (id, type) '
 db.execute(('INSERT INTO seed_match_types (id, type) '
             'VALUES(?, ?)'), (2, '7mer-A1'))
 
-# populate the mirnas table
+# populate the mirnas table, here we consider only the human miRNAs
 all_mirnas = pd.read_csv(DATA_FOLDER + MIRNA_FAMILY_INFO_FILE, delimiter='\t')
-human_mirnas = all_mirnas.loc[df['Species_ID'] == 9606, :]
-# The columns "miR_family" specifies the human-readable name for the miRNA.
-# For example, a value for miR_family is "let-7".
-# Sometimes the value of miR_family contains one or more slashes, to identity
-# that the row in the dataframe refers to more than one miRNAs
-# An example is let-7/98, which stands for let-7 and let-98
-# In few cases the value can be something like let-7-3p/miR-3596d/98-3p, which
-# stands for let-7-3p, miR-3596d, miR-98-3p
-# In the lines of code I remove these rows by replacing them with the
-# equivalent explicit rows
-human_mirnas_expanded <---------- TODO CONTINUE CODING HERE
+# 9606 is the species id for homo sapiens
+human_mirnas = all_mirnas.loc[all_mirnas['Species_ID'] == 9606, :]
 
 with open(DATA_FOLDER + MIRNA_ID_DICTIONARY_FILE) as infile:
     content = csv.reader(infile, delimiter='\t', quoting=csv.QUOTE_NONE)
     header = content.__next__()
     for row in content:
         mirna_family = row[0]
+        mirna_family = mirna_family
         mirna_id = int(row[1])
-        sequence = 'dummy'
+        sequence = human_mirnas.loc[human_mirnas['MiRBase_ID'] ==
+                                    mirna_family.replace('hsa-mir', 'hsa-miR'),
+                                    'Mature_sequence'].values[0]
         db.execute(('INSERT INTO mirnas (mirna_id, family, sequence) '
                     'VALUES(?, ?, ?)'), (mirna_id, mirna_family, sequence))
 
+# TODO: then next step is to insert genes
+        
 db_connection.commit()
 db_connection.close()
 print('finished')
