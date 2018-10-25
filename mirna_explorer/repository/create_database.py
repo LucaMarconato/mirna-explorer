@@ -70,7 +70,7 @@ with open(DATA_FOLDER + MIRNA_ID_DICTIONARY_FILE) as infile:
                     'VALUES(?, ?, ?)'), (mirna_id, mirna_family, sequence))
 
 # TODO: then next step is to insert genes
-        
+
 db_connection.commit()
 db_connection.close()
 print('finished')
