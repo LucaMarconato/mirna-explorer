@@ -1,4 +1,7 @@
 # mirna_explorer
+
+[![CircleCI](https://circleci.com/gh/LucaMarconato/mirna_explorer/tree/master.svg?style=svg)](https://circleci.com/gh/LucaMarconato/mirna_explorer/tree/master)
+
 A set of curated graphical representations to explore the simultaneous effect of hundreds of microRNAs onto thousands of genes.
 
 The code contained in this repository refers to data visualization only. The methods for computing the displayed quantities are publicly available in this other repository [mirna_target_prediction](https://github.com/LucaMarconato/mirna_target_prediction).
