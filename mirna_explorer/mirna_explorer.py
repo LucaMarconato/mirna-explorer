@@ -1,6 +1,5 @@
 import sys
-import PySide2.QtGui as QtGui
-import PySide2.QtWidgets as QtWidgets
+from PySide2 import QtGui, QtWidgets
 from gui.main import MirnaExplorer
 from assets.assets_mapper import AssetsMapper
 

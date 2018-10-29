@@ -1,15 +1,14 @@
-import PySide2.QtWidgets as QtWidgets
-import PySide2.QtCore as QtCore
-import PySide2.QtGui as QtGui
+from PySide2 import QtCore, QtGui
+from PySide2.QtWidgets import QWidget, QGridLayout
 from PySide2.QtCharts import QtCharts
 
 
-class GraphWidget(QtWidgets.QWidget):
+class GraphWidget(QWidget):
 
     def __init__(self):
         super().__init__()
 
-        grid = QtWidgets.QGridLayout()
+        grid = QGridLayout()
         grid.addWidget(self.create_dummy_chart(), 0, 0)
         self.setLayout(grid)
 

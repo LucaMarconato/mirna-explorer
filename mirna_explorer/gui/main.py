@@ -1,12 +1,12 @@
-import PySide2.QtWidgets as QtWidgets
+from PySide2.QtWidgets import QMainWindow, QDesktopWidget
 from gui.widgets.orchestrator import Orchestrator
 from gui.menubar import Menubar
 
 
-class MirnaExplorer(QtWidgets.QMainWindow):
+class MirnaExplorer(QMainWindow):
 
     def __init__(self):
-        QtWidgets.QMainWindow.__init__(self)
+        QMainWindow.__init__(self)
         self.setWindowTitle('Mirna Explorer')
         self.resize(1024, 768)
         self._center()
@@ -18,6 +18,6 @@ class MirnaExplorer(QtWidgets.QMainWindow):
 
     def _center(self):
         geometry = self.frameGeometry()
-        center = QtWidgets.QDesktopWidget().availableGeometry().center()
+        center = QDesktopWidget().availableGeometry().center()
         geometry.moveCenter(center)
         self.move(geometry.topLeft())

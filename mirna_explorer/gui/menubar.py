@@ -1,5 +1,5 @@
-import PySide2.QtWidgets as QtWidgets
-import PySide2.QtGui as QtGui
+from PySide2 import QtGui
+from PySide2.QtWidgets import QAction
 
 
 class Menubar:
@@ -67,7 +67,7 @@ class Menubar:
                     menu.addAction(self._create_action(submenu, **opts))
 
     def _create_action(self, text, function, shortcut=None):
-        action = QtWidgets.QAction(text, self._app)
+        action = QAction(text, self._app)
         if shortcut is not None:
             action.setShortcut(shortcut)
         action.triggered.connect(lambda: function())
