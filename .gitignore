@@ -4,6 +4,8 @@ mirna_explorer/gui/__pycache__/
 mirna_explorer/gui/*.py~
 *.py[cod]
 *$py.class
+.DS_Store
+test_results/
 
 # C extensions
 *.so
@@ -111,4 +113,3 @@ venv.bak/
 .mypy_cache/
 .dmypy.json
 dmypy.json
-
