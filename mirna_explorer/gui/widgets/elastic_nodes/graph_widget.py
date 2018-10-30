@@ -1,26 +1,28 @@
 import math
 from edge import Edge
 from node import Node
-from PySide2.QtGui import QPainter, QLinearGradient
-from PySide2.QtCore import Qt, QRectF
-from PySide2.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsItem
+from PySide2.QtGui import QPainter, QLinearGradient, QBrush
+from PySide2.QtCore import Qt, QRectF, qrand
+from PySide2.QtWidgets import QGraphicsView, QGraphicsScene
 
 
 class GraphWidget(QGraphicsView):
 
     def __init__(self, parent=None):
         super(GraphWidget, self).__init__()
-        self.timer_started = False
+
+        self.timer_id = 0
 
         scene = QGraphicsScene(self)
         scene.setItemIndexMethod(QGraphicsScene.NoIndex)
         scene.setSceneRect(-200, -200, 400, 400)
         self.setScene(scene)
 
-        self.setCacheMode(self.CacheBackground)
-        self.setViewportUpdateMode(self.BoundingRectViewportUpdate)
+        self.setCacheMode(QGraphicsView.CacheBackground)
+        self.setViewportUpdateMode(QGraphicsView.BoundingRectViewportUpdate)
         self.setRenderHint(QPainter.Antialiasing)
-        self.setTransformationAnchor(self.AnchorUnderMouse)
+        self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
+
         self.scale(0.8, 0.8)
         self.setMinimumSize(400, 400)
         self.setWindowTitle("Elastic Nodes")
@@ -68,12 +70,12 @@ class GraphWidget(QGraphicsView):
         node9.setPos(50, 50)
 
     def itemMoved(self):
-        if not self.timer_started:
+        if not self.timer_id:
             self.timer_id = self.startTimer(1000/25)
-            self.timer_started = True
 
     def keyPressEvent(self, event):
         key = event.key()
+
         if key == Qt.Key_Up:
             self.center_node.moveBy(0, -20)
         elif key == Qt.Key_Down:
@@ -89,27 +91,21 @@ class GraphWidget(QGraphicsView):
         elif key == Qt.Key_Space or key == Qt.Enter:
             self.shuffle()
         else:
-            QGraphicsView.keyPressEvent(event)
+            super(GraphWidget, self).keyPressEvent(event)
 
     def timerEvent(self, event):
-        nodes = []
-        for item in QGraphicsScene.items():
-            node = QGraphicsItem.qgraphicsitem_cast(item)
-            if node is not None:
-                nodes.append(node)
-
+        nodes = [item for item in self.scene().items() if isinstance(item, Node)]
         for node in nodes:
             node.calculate_forces()
 
         items_moved = False
         for node in nodes:
-            if node.advance_position():
+            if node.advance():
                 items_moved = True
 
         if not items_moved:
             self.killTimer(self.timer_id)
             self.timer_id = 0
-            self.timer_started = False
 
     def wheelEvent(self, event):
         self.scaleView(math.pow(2.0, -event.delta()/240.0))
@@ -118,10 +114,8 @@ class GraphWidget(QGraphicsView):
         scene_rect = self.sceneRect()
 
         # Shadow
-        right_shadow = QRectF(scene_rect.right(), scene_rect.top() + 5,
-                              5, scene_rect.height())
-        bottom_shadow = QRectF(scene_rect.left() + 5, scene_rect.bottom(),
-                               scene_rect.width(), 5)
+        right_shadow = QRectF(scene_rect.right(), scene_rect.top() + 5, 5, scene_rect.height())
+        bottom_shadow = QRectF(scene_rect.left() + 5, scene_rect.bottom(), scene_rect.width(), 5)
 
         if right_shadow.intersects(rect) or right_shadow.contains(rect):
             painter.fillRect(right_shadow, Qt.darkGray)
@@ -129,11 +123,10 @@ class GraphWidget(QGraphicsView):
             painter.fillRect(bottom_shadow, Qt.darkGray)
 
         # Fill
-        gradient = QLinearGradient(scene_rect.topLeft(),
-                             scene_rect.bottomRight())
+        gradient = QLinearGradient(scene_rect.topLeft(), scene_rect.bottomRight())
         gradient.setColorAt(0, Qt.white)
         gradient.setColorAt(1, Qt.lightGray)
-        painter.fillRect(rect.intersected(scene_rect), gradient)
+        painter.fillRect(rect.intersected(scene_rect), QBrush(gradient))
         painter.setBrush(Qt.NoBrush)
         painter.drawRect(scene_rect)
 
@@ -153,9 +146,19 @@ class GraphWidget(QGraphicsView):
         painter.drawText(text_rect, message)
 
     def scaleView(self, scale_factor):
-        factor = self.transform().scale(scale_factor, scale_factor)
-        factor = factor.mapRect(QRectF(0, 0, 1, 1)).width()
+        factor = self.transform().scale(scale_factor, scale_factor).mapRect(QRectF(0, 0, 1, 1)).width()
         if factor < 0.07 or factor > 100:
-            return None
+            return
 
         self.scale(scale_factor, scale_factor)
+
+    def shuffle(self):
+        for item in self.scene().items():
+            if isinstance(item, Node):
+                item.setPos(-150 + qrand() % 300, -150 + qrand() % 300)
+
+    def zoomIn(self):
+        self.scaleView(1.2)
+
+    def zoomOut(self):
+        self.scaleView(1/1.2)

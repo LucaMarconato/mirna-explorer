@@ -1,7 +1,6 @@
-from edge import Edge
-from PySide2.QtCore import Qt, QRectF
-from PySide2.QtGui import QGradient, QPainterPath, QPen
-from PySide2.QtWidgets import QGraphicsItem, QGraphicsScene, QStyle
+from PySide2.QtCore import Qt, QRectF, QPointF, QLineF, qAbs
+from PySide2.QtGui import QRadialGradient, QPainterPath, QPen, QColor, QBrush
+from PySide2.QtWidgets import QGraphicsItem, QStyle
 
 
 class Node(QGraphicsItem):
@@ -9,14 +8,14 @@ class Node(QGraphicsItem):
     def __init__(self, graph_widget):
         super(Node, self).__init__()
 
+        self.Type = QGraphicsItem.UserType + 1
         self.edges = []
         self.__graph = graph_widget
-        self.__newpos = 0
-        self.Type = QGraphicsItem.UserType + 1
+        self.__newpos = QPointF()
 
-        self.setFlag(self.ItemIsMovable)
-        self.setFlag(self.ItemSendsGeometryChanges)
-        self.setCacheMode(self.DeviceCoordinateCache)
+        self.setFlag(QGraphicsItem.ItemIsMovable)
+        self.setFlag(QGraphicsItem.ItemSendsGeometryChanges)
+        self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
         self.setZValue(-1)
 
     def type(self):
@@ -27,47 +26,44 @@ class Node(QGraphicsItem):
         edge.adjust()
 
     def calculate_forces(self):
-        if not QGraphicsScene() or QGraphicsScene.mouseGrabberItem() == self:
-            self.__new_pos = self.pos()
+        if not self.scene() or self.scene().mouseGrabberItem() is self:
+            self.__newpos = self.pos()
+            return
 
-        # Sum up all forces pushing this item away
-        xvel, yvel = 0, 0
-        for item in QGraphicsScene.items():
-            node = self.qgraphicsitem_cast(item)
-            if not node:
+        # Sum up all forces pushing this item away.
+        xvel = 0.0
+        yvel = 0.0
+        for item in self.scene().items():
+            if not isinstance(item, Node):
                 continue
 
-            vec = QGraphicsItem.mapFromItem(node, 0., 0.)
-            dx = vec.x()
-            dy = vec.y()
-            force = 2.0*(dx*dx + dy*dy)
+            line = QLineF(self.mapFromItem(item, 0, 0), QPointF(0, 0))
+            dx = line.dx()
+            dy = line.dy()
+            force = 2.0 * (dx * dx + dy * dy)
             if force > 0:
-                xvel += (dx*150.0)/force
-                yvel += (dy*150.0)/force
+                xvel += (dx * 150.0)/force
+                yvel += (dy * 150.0)/force
 
-        # Now subtract all forces pulling items together
-        weight = (len(self.edges) + 1)*10
+        # Now subtract all forces pulling items together.
+        weight = (len(self.edges) + 1) * 10.0
         for edge in self.edges:
-            if edge.source_node == self:
-                vec = QGraphicsItem.mapFromItem(edge.dest_node, 0, 0)
+            if edge.source_node is self:
+                pos = self.mapFromItem(edge.dest_node, 0, 0)
             else:
-                vec = QGraphicsItem.mapFromItem(edge.source_node, 0, 0)
+                pos = self.mapFromItem(edge.source_node, 0, 0)
+            xvel += pos.x() / weight
+            yvel += pos.y() / weight
 
-            xvel -= vec.x()/weight
-            yvel -= vec.y()/weight
+        if qAbs(xvel) < 0.1 and qAbs(yvel) < 0.1:
+            xvel = yvel = 0.0
 
-        if abs(xvel) < 0.1 and abs(yvel) < 0.1:
-            xvel = 0
-            yvel = 0
+        sceneRect = self.scene().sceneRect()
+        self.__newpos = self.pos() + QPointF(xvel, yvel)
+        self.__newpos.setX(min(max(self.__newpos.x(), sceneRect.left() + 10), sceneRect.right() - 10))
+        self.__newpos.setY(min(max(self.__newpos.y(), sceneRect.top() + 10), sceneRect.bottom() - 10))
 
-        scene_rect = QGraphicsScene().sceneRect()
-        self.__newpos = self.pos()
-        self.__newpos.setX(min(max(self.__newpos.x(), scene_rect.left() + 10),
-                               scene_rect.right() - 10))
-        self.__newpos.setY(min(max(self.__newpos.y(), scene_rect.top() + 10),
-                               scene_rect.bottom() - 10))
-
-    def advance_position(self):
+    def advance(self):
         if self.__newpos == self.pos():
             return False
 
@@ -75,7 +71,7 @@ class Node(QGraphicsItem):
         return True
 
     def boundingRect(self):
-        adjust = 2
+        adjust = 2.
         return QRectF(-10 - adjust, -10 - adjust, 23 + adjust, 23 + adjust)
 
     def shape(self):
@@ -86,9 +82,9 @@ class Node(QGraphicsItem):
     def paint(self, painter, option, widget):
         painter.setPen(Qt.NoPen)
         painter.setBrush(Qt.darkGray)
-        painter.addEllipse(-7, -7, 20, 20)
+        painter.drawEllipse(-7, -7, 20, 20)
 
-        gradient = QGradient(-3, -3, 10)
+        gradient = QRadialGradient(-3, -3, 10)
         if option.state & QStyle.State_Sunken:
             gradient.setCenter(3, 3)
             gradient.setFocalPoint(3, 3)
@@ -98,22 +94,22 @@ class Node(QGraphicsItem):
             gradient.setColorAt(0, Qt.yellow)
             gradient.setColorAt(1, Qt.darkYellow)
 
-        painter.setBrush(gradient)
-        painter.setPen(QPen(Qt.black), 0)
+        painter.setBrush(QBrush(gradient))
+        painter.setPen(QPen(Qt.black, 0))
         painter.drawEllipse(-10, -10, 20, 20)
 
     def itemChange(self, change, value):
         if change == QGraphicsItem.ItemPositionHasChanged:
             for edge in self.edges:
                 edge.adjust()
-            self.graph.itemMoved()
+            self.__graph.itemMoved()
 
-        return QGraphicsItem.itemChange(change, value)
+        return super(Node, self).itemChange(change, value)
 
     def mousePressEvent(self, event):
         self.update()
-        self.mousePressEvent(event)
+        super(Node, self).mousePressEvent(event)
 
     def mouseReleaseEvent(self, event):
         self.update()
-        self.mouseReleaseEvent(event)
+        super(Node, self).mouseReleaseEvent(event)

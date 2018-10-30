@@ -7,3 +7,4 @@ mirna_explorer/gui/__pycache__/
 mirna_explorer/gui/*.py~
 mirna_explorer/gui/widgets/__pycache__/
 mirna_explorer/gui/widgets/elastic_nodes/*.py~
+mirna_explorer/gui/widgets/elastic_nodes/__pycache__/
