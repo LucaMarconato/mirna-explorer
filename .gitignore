@@ -1,2 +1,10 @@
 .DS_Store
 test_results/
+tests/__pycache__/
+mirna_explorer/repository/__pycache__/
+mirna_explorer/assets/__pycache__/
+mirna_explorer/gui/__pycache__/
+mirna_explorer/gui/*.py~
+mirna_explorer/gui/widgets/__pycache__/
+mirna_explorer/gui/widgets/elastic_nodes/*.py~
+mirna_explorer/gui/widgets/elastic_nodes/__pycache__/
